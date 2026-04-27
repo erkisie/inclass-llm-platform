@@ -126,3 +126,16 @@ def instructor_leaderboard(email: str, password: str, course_id: str):
 @app.post("/instructor/activity-stats")
 def instructor_activity_stats(email: str, password: str, course_id: str, activity_no: int):
     return getActivityStats(email, password, course_id, activity_no)
+
+@app.get("/health")
+def health_check():
+    from app.db import supabase
+
+    if supabase is None:
+        return {"ok": False, "message": "Database connection is not configured"}
+
+    try:
+        supabase.table("courses").select("id").limit(1).execute()
+        return {"ok": True, "message": "Service and database are healthy"}
+    except Exception as e:
+        return {"ok": False, "message": f"Database error: {str(e)}"}
