@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv()
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from fastapi import FastAPI
 from app.services import (
@@ -25,7 +27,13 @@ from app.services import (
 )
 
 app = FastAPI(title="InClass LLM Platform")
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():
@@ -129,3 +137,5 @@ def instructor_activity_stats(email: str, password: str, course_id: str, activit
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+app.mount("/ui", StaticFiles(directory="frontend", html=True), name="frontend")
