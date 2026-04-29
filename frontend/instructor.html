@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Instructor Panel</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar">
+    <h2>Instructor Panel</h2>
+    <p>Manage activities and scores.</p>
+    <a href="index.html" class="btn secondary">Home</a>
+  </div>
+
+  <div class="main">
+    <h1>Instructor Dashboard</h1>
+
+    <div class="panel">
+      <h3>Instructor Login</h3>
+      <input id="email" value="bekmezcii@mef.edu.tr">
+      <input id="password" value="ilker123" type="password">
+      <button class="primary" onclick="login()">Login</button>
+      <pre id="loginOut"></pre>
+    </div>
+
+    <div class="panel">
+      <h3>My Courses</h3>
+      <button class="primary" onclick="listCourses()">Load My Courses</button>
+      <pre id="courseOut"></pre>
+    </div>
+
+    <div class="panel">
+      <h3>Activities</h3>
+      <input id="courseId" value="COMP302">
+      <input id="activityNo" value="5">
+
+      <textarea id="updateText">Updated activity text</textarea>
+
+      <button class="primary" onclick="listActivities()">List Activities</button>
+      <button class="success" onclick="startActivity()">Start Activity</button>
+      <button class="danger" onclick="endActivity()">End Activity</button>
+      <button class="primary" onclick="updateActivity()">Update Activity</button>
+      <button class="danger" onclick="resetActivity()">Reset Activity</button>
+
+      <pre id="activityOut"></pre>
+    </div>
+
+    <div class="panel">
+      <h3>Create Activity</h3>
+      <input id="newActivityNo" value="6">
+      <textarea id="activityText">Demo activity for final presentation</textarea>
+      <button class="success" onclick="createActivity()">Create Activity</button>
+      <pre id="createOut"></pre>
+    </div>
+
+    <div class="panel">
+      <h3>Scores</h3>
+      <button class="primary" onclick="exportScores()">Export Scores</button>
+      <button class="primary" onclick="leaderboard()">Leaderboard</button>
+      <button class="primary" onclick="stats()">Activity Stats</button>
+      <pre id="scoreOut"></pre>
+    </div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/instructor.js"></script>
+</body>
+</html>

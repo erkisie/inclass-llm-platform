@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Student Panel</title>
+  <style>
+    body { font-family: Arial; background:#f4f6f8; padding:30px; }
+    .box { max-width:650px; margin:auto; background:white; padding:25px; border-radius:12px; box-shadow:0 4px 12px #ccc; }
+    input, textarea, button { width:100%; padding:10px; margin:8px 0; box-sizing:border-box; }
+    button { background:#2563eb; color:white; border:0; border-radius:8px; cursor:pointer; }
+    pre { background:#111827; color:white; padding:15px; border-radius:8px; }
+  </style>
+</head>
+<body>
+<div class="box">
+  <h1>Student Panel</h1>
+
+  <input id="email" value="test@test.com" placeholder="Email">
+  <input id="password" value="1234" placeholder="Password">
+  <input id="course_id" value="SE101" placeholder="Course ID">
+  <input id="activity_no" value="3" placeholder="Activity No">
+
+  <button onclick="getActivity()">Activity Getir</button>
+
+  <input id="score" value="85" placeholder="Score">
+  <textarea id="meta">demo test</textarea>
+
+  <button onclick="submitScore()">Score Gönder</button>
+
+  <h2>Backend Response</h2>
+  <pre id="output">Henüz istek gönderilmedi.</pre>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+async function getActivity() {
+  try {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const course_id = document.getElementById("course_id").value;
+    const activity_no = document.getElementById("activity_no").value;
+
+    const response = await fetch(`${API}/student/get-activity?email=${email}&password=${password}&course_id=${course_id}&activity_no=${activity_no}`, {
+      method: "POST"
+    });
+
+    const data = await response.json();
+    document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+  } catch (error) {
+    document.getElementById("output").innerText = "ERROR: " + error;
+  }
+}
+
+async function submitScore() {
+  try {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const course_id = document.getElementById("course_id").value;
+    const activity_no = document.getElementById("activity_no").value;
+    const score = document.getElementById("score").value;
+    const meta = encodeURIComponent(document.getElementById("meta").value);
+
+    const response = await fetch(`${API}/student/log-score?email=${email}&password=${password}&course_id=${course_id}&activity_no=${activity_no}&score=${score}&meta=${meta}`, {
+      method: "POST"
+    });
+
+    const data = await response.json();
+    document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+  } catch (error) {
+    document.getElementById("output").innerText = "ERROR: " + error;
+  }
+}
+</script>
+</body>
+</html>

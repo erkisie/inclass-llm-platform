@@ -1,0 +1,196 @@
+* {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #eef2f8;
+  color: #111827;
+}
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #eef2ff, #f8fafc);
+}
+
+.hero-card {
+  background: white;
+  padding: 42px;
+  border-radius: 22px;
+  text-align: center;
+  width: 680px;
+  box-shadow: 0 20px 55px rgba(15, 23, 42, 0.14);
+  border-top: 7px solid #d71920;
+}
+
+.logo {
+  width: 210px;
+  margin-bottom: 18px;
+}
+
+h1, h2, h3 {
+  color: #172554;
+}
+
+.subtitle {
+  color: #64748b;
+  margin-bottom: 30px;
+}
+
+.role-grid {
+  display: flex;
+  gap: 18px;
+}
+
+.role-card {
+  flex: 1;
+  background: #172554;
+  color: white;
+  padding: 22px;
+  border-radius: 16px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.role-card:hover {
+  background: #1e3a8a;
+  transform: translateY(-3px);
+}
+
+.role-card span {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.role-card small {
+  color: #c7d2fe;
+}
+
+/* dashboard */
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 270px;
+  background: #172554;
+  color: white;
+  padding: 28px;
+}
+
+.side-logo {
+  width: 170px;
+  background: white;
+  padding: 10px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+
+.sidebar h2 {
+  color: white;
+  margin-bottom: 10px;
+}
+
+.sidebar p {
+  color: #dbeafe;
+  line-height: 1.5;
+}
+
+.main {
+  flex: 1;
+  padding: 34px;
+}
+
+.page-header {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 22px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.07);
+  border-left: 6px solid #d71920;
+}
+
+.page-header h1 {
+  margin: 0 0 6px;
+}
+
+.page-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.panel {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 22px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.07);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 13px;
+  margin: 8px 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+button, .btn {
+  border: none;
+  padding: 11px 16px;
+  border-radius: 10px;
+  margin: 4px 4px 4px 0;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.primary {
+  background: #1e3a8a;
+  color: white;
+}
+
+.success {
+  background: #16a34a;
+  color: white;
+}
+
+.danger {
+  background: #dc2626;
+  color: white;
+}
+
+.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.full {
+  width: 100%;
+  text-align: center;
+  margin-top: 12px;
+}
+
+pre {
+  background: #0f172a;
+  color: #d1fae5;
+  padding: 14px;
+  border-radius: 12px;
+  min-height: 45px;
+  overflow-x: auto;
+}

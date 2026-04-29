@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Panel | MEF InClass</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <img src="assets/mef-logo.png" class="side-logo" alt="MEF Logo">
+    <h2>Student Panel</h2>
+    <p>Access active activities and submit your score.</p>
+    <a href="index.html" class="btn secondary full">Home</a>
+  </aside>
+
+  <main class="main">
+    <div class="page-header">
+      <h1>Student Dashboard</h1>
+      <p>Join an active activity and submit your progress.</p>
+    </div>
+
+    <section class="panel">
+      <h3>Student Login</h3>
+      <div class="form-grid">
+        <input id="email" value="erkisie@mef.edu.tr" placeholder="Student email">
+        <input id="password" value="elif123" type="password" placeholder="Password">
+      </div>
+      <button class="primary" onclick="login()">Login</button>
+      <pre id="loginOut"></pre>
+    </section>
+
+    <section class="panel">
+      <h3>Get Activity</h3>
+      <div class="form-grid">
+        <input id="courseId" value="COMP302" placeholder="Course ID">
+        <input id="activityNo" value="4" placeholder="Activity No">
+      </div>
+      <button class="primary" onclick="getActivity()">Get Activity</button>
+      <pre id="activityOut"></pre>
+    </section>
+
+    <section class="panel">
+      <h3>Submit Score</h3>
+      <div class="form-grid">
+        <input id="score" value="1" placeholder="Score">
+        <input id="meta" value="Message types" placeholder="Objective / meta">
+      </div>
+      <button class="success" onclick="logScore()">Submit Score</button>
+      <pre id="scoreOut"></pre>
+    </section>
+  </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/student.js"></script>
+</body>
+</html>
