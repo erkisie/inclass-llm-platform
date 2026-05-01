@@ -1,9 +1,9 @@
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 load_dotenv()
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.services import (
     studentLogin,
     changeStudentPassword,
@@ -27,13 +27,7 @@ from app.services import (
 )
 
 app = FastAPI(title="InClass LLM Platform")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
 
 @app.get("/")
 def root():
@@ -136,8 +130,15 @@ def instructor_activity_stats(email: str, password: str, course_id: str, activit
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    from app.db import supabase
 
-app.mount("/ui", StaticFiles(directory="frontend", html=True), name="frontend")
+    if supabase is None:
+        return {"ok": False, "message": "Database connection is not configured"}
+
+    try:
+        supabase.table("courses").select("id").limit(1).execute()
+        return {"ok": True, "message": "Service and database are healthy"}
+    except Exception as e:
+        return {"ok": False, "message": f"Database error: {str(e)}"}
 
 app.mount("/ui", StaticFiles(directory="frontend", html=True), name="ui")
