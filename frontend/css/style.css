@@ -194,3 +194,55 @@ pre {
   min-height: 45px;
   overflow-x: auto;
 }
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.07);
+  border-left: 6px solid #d71920;
+}
+
+.summary-card span {
+  display: block;
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.summary-card strong {
+  color: #172554;
+  font-size: 24px;
+}
+
+.clean-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.clean-table th,
+.clean-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.clean-table th {
+  color: #172554;
+}
+
+.notice-success {
+  color: #166534;
+}
+
+.notice-error {
+  color: #991b1b;
+}

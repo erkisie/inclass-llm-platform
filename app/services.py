@@ -586,24 +586,15 @@ def exportScores(email: str, password: str, course_id: str, activity_no: int) ->
         ]
 
         for row in rows:
-            student_email = str(row.get("student_email", ""))
-            row_course_id = str(row.get("course_id", ""))
-            row_activity_no = str(row.get("activity_no", ""))
-            score = str(row.get("score", ""))
-            meta = str(row.get("meta", "")).replace('"', '""')
-            is_achieved = str(row.get("is_achieved", ""))
-
             csv_lines.append(
-                f'"{student_email}","{row_course_id}","{row_activity_no}","{score}","{meta}","{is_achieved}"'
+                f"{row.get('student_email','')},{row.get('course_id','')},{row.get('activity_no','')},{row.get('score','')},{row.get('meta','')},{row.get('is_achieved','')}"
             )
-
-        csv_text = "\n".join(csv_lines)
 
         return {
             "ok": True,
             "message": "Scores exported successfully",
             "data": rows,
-            "csv": csv_text
+            "csv": "\n".join(csv_lines)
         }
 
     except Exception as e:
