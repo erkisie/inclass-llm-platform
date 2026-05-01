@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
 
@@ -133,3 +134,5 @@ def instructor_activity_stats(email: str, password: str, course_id: str, activit
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+app.mount("/ui", StaticFiles(directory="frontend", html=True), name="ui")
