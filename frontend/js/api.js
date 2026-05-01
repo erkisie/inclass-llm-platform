@@ -14,20 +14,15 @@ async function postRequest(endpoint, params = {}, body = null) {
     headers: { "accept": "application/json" }
   };
 
-  if (body !== null && Array.isArray(body) === false) {
+  if (body !== null) {
     options.headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(body);
   }
 
   const res = await fetch(url, options);
-  const text = await res.text();
+  return await res.json();
+}
 
-  try {
-    return JSON.parse(text);
-  } catch {
-    return {
-      ok: false,
-      message: text
-    };
-  }
+function show(id, data) {
+  document.getElementById(id).textContent = JSON.stringify(data, null, 2);
 }

@@ -16,6 +16,17 @@
   <div class="main">
     <h1>Instructor Dashboard</h1>
 
+<div class="summary-grid">
+  <div class="summary-card">
+    <span>Course</span>
+    <strong>COMP302</strong>
+  </div>
+  <div class="summary-card">
+    <span>Demo Mode</span>
+    <strong>Ready</strong>
+  </div>
+</div>
+
     <div class="panel">
       <h3>Instructor Login</h3>
       <input id="email" value="bekmezcii@mef.edu.tr">
@@ -25,30 +36,18 @@
     </div>
 
     <div class="panel">
-      <h3>My Courses</h3>
-      <button class="primary" onclick="listCourses()">Load My Courses</button>
-      <pre id="courseOut"></pre>
-    </div>
-
-    <div class="panel">
       <h3>Activities</h3>
       <input id="courseId" value="COMP302">
-      <input id="activityNo" value="5">
-
-      <textarea id="updateText">Updated activity text</textarea>
-
+      <input id="activityNo" value="4">
       <button class="primary" onclick="listActivities()">List Activities</button>
       <button class="success" onclick="startActivity()">Start Activity</button>
       <button class="danger" onclick="endActivity()">End Activity</button>
-      <button class="primary" onclick="updateActivity()">Update Activity</button>
-      <button class="danger" onclick="resetActivity()">Reset Activity</button>
-
       <pre id="activityOut"></pre>
     </div>
 
     <div class="panel">
       <h3>Create Activity</h3>
-      <input id="newActivityNo" value="6">
+      <input id="newActivityNo" value="5">
       <textarea id="activityText">Demo activity for final presentation</textarea>
       <button class="success" onclick="createActivity()">Create Activity</button>
       <pre id="createOut"></pre>

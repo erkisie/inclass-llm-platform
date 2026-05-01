@@ -588,27 +588,20 @@ def resetActivity(email: str, password: str, course_id: str, activity_no: int) -
         if not check.data:
             return _error("Activity not found")
 
-        # 🔥 SCORES SİL
-        supabase.table("scores")\
-            .delete()\
-            .eq("course_id", course_id)\
-            .eq("activity_no", activity_no)\
-            .execute()
+        supabase.table("scores").delete().eq("course_id", course_id).eq("activity_no", activity_no).execute()
 
-        # 🔥 STATUS RESETLE (ASIL FIX BURASI)
         response = (
             supabase
             .table("activities")
-            .update({"status": "NOT_STARTED"})   # 🔥 BURAYI DEĞİŞTİRDİK
+            .update({"status": "ENDED"})
             .eq("course_id", course_id)
             .eq("activity_no", activity_no)
             .execute()
         )
-
         return _success(response.data, "Activity reset successfully")
-
     except Exception as e:
         return _error(f"Database error: {str(e)}")
+
 
 def resetStudentPassword(email: str, password: str, course_id: str, student_email: str, new_password: str) -> dict:
     if not all([email, password, course_id, student_email, new_password]):
