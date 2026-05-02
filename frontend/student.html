@@ -4,52 +4,192 @@
   <meta charset="UTF-8">
   <title>Student Panel | MEF InClass</title>
   <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Sora', sans-serif; }
+    pre, code { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+
+    .step-badge {
+      display: inline-block;
+      background: #d71920;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .sidebar-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      background: rgba(255,255,255,0.08);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #dbeafe;
+    }
+
+    .status-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dot.online  { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
+    .status-dot.offline { background: #94a3b8; }
+
+    .activity-card {
+      background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%);
+      border-radius: 14px;
+      padding: 22px;
+      margin-top: 16px;
+      color: white;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .activity-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .activity-badge {
+      background: #d71920;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .activity-card h4 { margin: 0; color: white; font-size: 16px; font-weight: 600; }
+    .activity-card p  { margin: 0 0 10px; color: #c7d2fe; line-height: 1.6; }
+    .activity-note    { font-size: 12px !important; color: #818cf8 !important; margin-top: 12px !important; }
+
+    .score-submitted {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-top: 14px;
+      color: #15803d;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .panel { animation: fadeUp 0.3s ease both; }
+    .panel:nth-child(1) { animation-delay: 0.00s; }
+    .panel:nth-child(2) { animation-delay: 0.07s; }
+    .panel:nth-child(3) { animation-delay: 0.14s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    button { transition: background 0.15s, transform 0.1s; }
+    button:active { transform: scale(0.97); }
+  </style>
 </head>
 <body>
-
 <div class="layout">
   <aside class="sidebar">
     <img src="assets/mef-logo.png" class="side-logo" alt="MEF Logo">
     <h2>Student Panel</h2>
-    <p>Access active activities and submit your score.</p>
+    <p>Access active activities and submit your answers.</p>
     <a href="index.html" class="btn secondary full">Home</a>
+    <div class="sidebar-status" id="loginStatus">
+      <span class="status-dot offline"></span>
+      <span>Not logged in</span>
+    </div>
   </aside>
 
   <main class="main">
     <div class="page-header">
       <h1>Student Dashboard</h1>
-      <p>Join an active activity and submit your progress.</p>
+      <p>Log in, load your activity, then submit your score.</p>
     </div>
 
-    <section class="panel">
-      <h3>Student Login</h3>
+    <!-- STEP 1: LOGIN -->
+    <div class="panel">
+      <div class="step-badge">Step 1</div>
+      <h3>Login</h3>
       <div class="form-grid">
-        <input id="email" value="erkisie@mef.edu.tr" placeholder="Student email">
-        <input id="password" value="elif123" type="password" placeholder="Password">
+        <div>
+          <label class="field-label">Email</label>
+          <input id="email" value="erkisie@mef.edu.tr" placeholder="Student email">
+        </div>
+        <div>
+          <label class="field-label">Password</label>
+          <input id="password" value="elif123" type="password" placeholder="Password">
+        </div>
       </div>
       <button class="primary" onclick="login()">Login</button>
       <pre id="loginOut"></pre>
-    </section>
+    </div>
 
-    <section class="panel">
+    <!-- STEP 2: GET ACTIVITY -->
+    <div class="panel">
+      <div class="step-badge">Step 2</div>
       <h3>Get Activity</h3>
       <div class="form-grid">
-        <input id="courseId" value="COMP302" placeholder="Course ID">
-        <input id="activityNo" value="4" placeholder="Activity No">
+        <div>
+          <label class="field-label">Course ID</label>
+          <input id="courseId" value="COMP302" placeholder="e.g. COMP302">
+        </div>
+        <div>
+          <label class="field-label">Activity No</label>
+          <input id="activityNo" value="4" placeholder="e.g. 4" type="number">
+        </div>
       </div>
-      <button class="primary" onclick="getActivity()">Get Activity</button>
+      <button class="primary" onclick="getActivity()">Load Activity</button>
+      <div id="activityCard" style="display:none" class="activity-card">
+        <div class="activity-card-header">
+          <span class="activity-badge" id="activityBadge"></span>
+          <h4>Activity</h4>
+        </div>
+        <p id="activityBody"></p>
+        <p class="activity-note">Learning objectives are hidden from student view.</p>
+      </div>
       <pre id="activityOut"></pre>
-    </section>
+    </div>
 
-    <section class="panel">
+    <!-- STEP 3: SUBMIT SCORE -->
+    <div class="panel">
+      <div class="step-badge">Step 3</div>
       <h3>Submit Score</h3>
       <div class="form-grid">
-        <input id="score" value="1" placeholder="Score">
-        <input id="meta" value="Message types" placeholder="Objective / meta">
+        <div>
+          <label class="field-label">Score</label>
+          <input id="score" value="1" placeholder="e.g. 1" type="number" min="0">
+        </div>
+        <div>
+          <label class="field-label">Objective / Meta</label>
+          <input id="meta" value="Message types" placeholder="e.g. Message types">
+        </div>
       </div>
       <button class="success" onclick="logScore()">Submit Score</button>
+      <div id="scoreSuccess" style="display:none" class="score-submitted">Score submitted successfully.</div>
       <pre id="scoreOut"></pre>
-    </section>
+    </div>
+
   </main>
 </div>
 

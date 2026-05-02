@@ -14,16 +14,30 @@ function activityNo() {
 }
 
 function niceMessage(data, successText) {
-  if (data.ok) {
-    return "✔ " + successText;
+  if (data.ok) return "OK  " + successText;
+  return "ERR  " + (data.message || "An error occurred");
+}
+
+function setLoginStatus(loggedIn, email) {
+  const el = document.getElementById("loginStatus");
+  if (!el) return;
+  const dot = el.querySelector(".status-dot");
+  const lbl = el.querySelector("span:last-child");
+  if (loggedIn) {
+    dot.className = "status-dot online";
+    lbl.textContent = email;
+  } else {
+    dot.className = "status-dot offline";
+    lbl.textContent = "Not logged in";
   }
-  return "✖ " + data.message;
 }
 
 async function login() {
-  const data = await postRequest("/student/login", student());
-  document.getElementById("loginOut").textContent =
-    niceMessage(data, "Student login successful.");
+  const creds = student();
+  const data = await postRequest("/student/login", creds);
+  const out = document.getElementById("loginOut");
+  out.textContent = niceMessage(data, "Logged in successfully.");
+  if (data.ok) setLoginStatus(true, creds.email);
 }
 
 async function getActivity() {
@@ -33,26 +47,31 @@ async function getActivity() {
     activity_no: activityNo()
   });
 
+  const card = document.getElementById("activityCard");
+  const out  = document.getElementById("activityOut");
+
+  card.style.display = "none";
+  out.textContent = "";
+
   if (!data.ok) {
-    document.getElementById("activityOut").textContent = "✖ " + data.message;
+    out.textContent = niceMessage(data, "");
     return;
   }
 
   const activity = data.data || data.activity || data;
+  const activityText =
+    activity.activity_text ||
+    (activity.data && activity.data.activity_text) ||
+    null;
 
-  let text = "✔ Activity loaded successfully.\n\n";
-
-  if (activity.activity_text) {
-    text += activity.activity_text;
-  } else if (activity.data && activity.data.activity_text) {
-    text += activity.data.activity_text;
+  if (activityText) {
+    document.getElementById("activityBadge").textContent =
+      `${courseId()}  ·  Activity ${activityNo()}`;
+    document.getElementById("activityBody").textContent = activityText;
+    card.style.display = "block";
   } else {
-    text += "Activity is available.";
+    out.textContent = "Activity is available. No text provided.";
   }
-
-  text += "\n\nLearning objectives are hidden from student view.";
-
-  document.getElementById("activityOut").textContent = text;
 }
 
 async function logScore() {
@@ -64,6 +83,14 @@ async function logScore() {
     meta: document.getElementById("meta").value
   });
 
-  document.getElementById("scoreOut").textContent =
-    niceMessage(data, "Score submitted successfully.");
+  const successEl = document.getElementById("scoreSuccess");
+  const out = document.getElementById("scoreOut");
+
+  if (data.ok) {
+    successEl.style.display = "block";
+    out.textContent = "";
+  } else {
+    successEl.style.display = "none";
+    out.textContent = niceMessage(data, "");
+  }
 }

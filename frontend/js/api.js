@@ -4,8 +4,14 @@ async function postRequest(endpoint, params = {}, body = null) {
   const url = new URL(API_BASE + endpoint);
 
   Object.keys(params).forEach(key => {
-    if (params[key] !== "" && params[key] !== null && params[key] !== undefined) {
-      url.searchParams.append(key, params[key]);
+    const val = params[key];
+    if (val === "" || val === null || val === undefined) return;
+
+    if (Array.isArray(val)) {
+      // FastAPI list[str] requires repeated query params: ?key=a&key=b
+      val.forEach(item => url.searchParams.append(key, item));
+    } else {
+      url.searchParams.append(key, val);
     }
   });
 

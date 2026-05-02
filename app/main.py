@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
 
@@ -102,11 +103,10 @@ def instructor_create_activity(
     password: str,
     course_id: str,
     activity_text: str,
-    learning_objectives: list[str],
+    learning_objectives: list[str] = Query(...),
     activity_no_optional: int | None = None
 ):
     return createActivity(email, password, course_id, activity_text, learning_objectives, activity_no_optional)
-
 
 @app.post("/instructor/update-activity")
 def instructor_update_activity(email: str, password: str, course_id: str, activity_no: int, patch: dict):
@@ -152,3 +152,5 @@ def instructor_activity_stats(email: str, password: str, course_id: str, activit
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+app.mount("/ui", StaticFiles(directory="frontend"), name="ui")
