@@ -195,10 +195,17 @@ def getActivity(email: str, password: str, course_id: str, activity_no: int) -> 
         if status == "ENDED":
             return _error("Activity has already ended")
 
-        return _success(activity, "Activity fetched successfully")
+        safe_activity = {
+            "course_id": activity["course_id"],
+            "activity_no": activity["activity_no"],
+            "activity_text": activity["activity_text"],
+            "status": activity["status"]
+        }
+
+        return _success(safe_activity, "Activity fetched successfully")
+
     except Exception as e:
         return _error(f"Database error: {str(e)}")
-
 
 def logScore(email: str, password: str, course_id: str, activity_no: int, score: float, meta: str | None = None) -> dict:
     if not all([email, password, course_id]) or activity_no is None:
@@ -646,7 +653,7 @@ def resetActivity(email: str, password: str, course_id: str, activity_no: int) -
         response = (
             supabase
             .table("activities")
-            .update({"status": "NOT_STARTED"})
+            .update({"status": "ENDED"})
             .eq("id", activity_id)
             .execute()
         )
