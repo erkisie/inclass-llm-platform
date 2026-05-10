@@ -134,11 +134,11 @@
       <div class="form-grid">
         <div>
           <label class="field-label">Email</label>
-          <input id="email" value="erkisie@mef.edu.tr" placeholder="Student email">
+          <input id="email" placeholder="Student email">
         </div>
         <div>
           <label class="field-label">Password</label>
-          <input id="password" value="elif123" type="password" placeholder="Password">
+          <input id="password" type="password" placeholder="Password">
         </div>
       </div>
       <button class="primary" onclick="login()">Login</button>
@@ -152,11 +152,11 @@
       <div class="form-grid">
         <div>
           <label class="field-label">Course ID</label>
-          <input id="courseId" value="COMP302" placeholder="e.g. COMP302">
+          <input id="courseId" placeholder="e.g. COMP302">
         </div>
         <div>
           <label class="field-label">Activity No</label>
-          <input id="activityNo" value="4" placeholder="e.g. 4" type="number">
+          <input id="activityNo" placeholder="e.g. 1" type="number">
         </div>
       </div>
       <button class="primary" onclick="getActivity()">Load Activity</button>
@@ -168,6 +168,14 @@
         <p id="activityBody"></p>
         <p class="activity-note">Learning objectives are hidden from student view.</p>
       </div>
+
+      <!-- AI Tutor Button (görünür olur activity yüklendikten sonra) -->
+      <div id="tutorBtnWrap" style="display:none; margin-top:14px;">
+        <button class="success full" style="font-size:15px; padding:13px;" onclick="openTutor()">
+          🎓 Start AI Tutor
+        </button>
+      </div>
+
       <pre id="activityOut"></pre>
     </div>
 
@@ -195,5 +203,43 @@
 
 <script src="js/api.js?v1"></script>
 <script src="js/student.js?v1"></script>
-</body>
+<script>
+// Credential'ları sessionStorage'a kaydet (chat.html okuyacak)
+const _origLogin = window.login;
+document.querySelector("button[onclick='login()']")?.addEventListener("click", () => {
+  setTimeout(() => {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    if (email && password) {
+      sessionStorage.setItem("sc_email", email);
+      sessionStorage.setItem("sc_password", password);
+    }
+  }, 300);
+});
+
+const _origGetActivity = window.getActivity;
+document.querySelector("button[onclick='getActivity()']")?.addEventListener("click", () => {
+  setTimeout(() => {
+    const courseId = document.getElementById("courseId").value.trim();
+    const activityNo = document.getElementById("activityNo").value.trim();
+    if (courseId) sessionStorage.setItem("sc_course_id", courseId);
+    if (activityNo) sessionStorage.setItem("sc_activity_no", activityNo);
+    // Butonu göster
+    const wrap = document.getElementById("tutorBtnWrap");
+    if (wrap) wrap.style.display = "block";
+  }, 500);
+});
+
+function openTutor() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const courseId = document.getElementById("courseId").value.trim();
+  const activityNo = document.getElementById("activityNo").value.trim();
+  sessionStorage.setItem("sc_email", email);
+  sessionStorage.setItem("sc_password", password);
+  sessionStorage.setItem("sc_course_id", courseId);
+  sessionStorage.setItem("sc_activity_no", activityNo);
+  window.location.href = "chat.html";
+}
+</script>
 </html>
