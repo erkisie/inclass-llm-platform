@@ -2,6 +2,7 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 load_dotenv()
 
@@ -146,6 +147,31 @@ def instructor_leaderboard(email: str, password: str, course_id: str):
 @app.post("/instructor/activity-stats")
 def instructor_activity_stats(email: str, password: str, course_id: str, activity_no: int):
     return getActivityStats(email, password, course_id, activity_no)
+
+
+@app.get("/student/get-score")
+def get_student_score(email: str, password: str, course_id: str, activity_no: int):
+    from app.services import getStudentScore
+    return getStudentScore(email, password, course_id, activity_no)
+
+
+# ---------- CHAT ----------
+class ChatRequest(BaseModel):
+    email: str
+    password: str
+    course_id: str
+    activity_no: int
+    message: str
+    history: list[dict] = []
+
+
+@app.post("/student/chat")
+async def student_chat(req: ChatRequest):
+    from app.chat_service import studentChat
+    return await studentChat(
+        req.email, req.password, req.course_id,
+        req.activity_no, req.message, req.history
+    )
 
 
 # ---------- HEALTH ----------
