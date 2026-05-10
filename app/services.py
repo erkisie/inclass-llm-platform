@@ -221,18 +221,20 @@ def logScore(email: str, password: str, course_id: str, activity_no: int, score:
         return _error("Invalid student credentials")
 
     try:
-        existing = (
-            supabase
-            .table("scores")
-            .select("*")
-            .eq("student_email", email)
-            .eq("course_id", course_id)
-            .eq("activity_no", activity_no)
-            .execute()
-        )
-
-        if existing.data:
-            return _error("Score already submitted for this activity")
+        # Aynı objective için tekrar puan verilmesini engelle (activity bazlı değil, objective bazlı)
+        if meta:
+            existing = (
+                supabase
+                .table("scores")
+                .select("*")
+                .eq("student_email", email)
+                .eq("course_id", course_id)
+                .eq("activity_no", activity_no)
+                .eq("meta", meta)
+                .execute()
+            )
+            if existing.data:
+                return _error("Score already submitted for this objective")
 
         activity_check = (
             supabase
@@ -397,7 +399,7 @@ def createActivity(email: str, password: str, course_id: str, activity_text: str
             "course_id": course_id,
             "activity_no": activity_no,
             "activity_text": activity_text,
-            "learning_objectives": ", ".join(learning_objectives),
+            "learning_objectives": learning_objectives,
             "status": "NOT_STARTED"
         }
 
@@ -424,9 +426,6 @@ def updateActivity(email: str, password: str, course_id: str, activity_no: int, 
     invalid_fields = [key for key in patch.keys() if key not in allowed_fields]
     if invalid_fields:
         return _error(f"Invalid patch fields: {invalid_fields}")
-
-    if "learning_objectives" in patch and isinstance(patch["learning_objectives"], list):
-        patch["learning_objectives"] = ", ".join(patch["learning_objectives"])
 
     try:
         if not _check_instructor_ownership(email, course_id):
@@ -851,5 +850,26 @@ def getActivityStats(email: str, password: str, course_id: str, activity_no: int
         }
 
         return _success(stats, "Activity stats generated successfully")
+    except Exception as e:
+        return _error(f"Database error: {str(e)}")
+
+
+def getStudentScore(email: str, password: str, course_id: str, activity_no: int) -> dict:
+    """Öğrencinin bu aktivitedeki toplam puanını döner."""
+    if not _check_student_credentials(email, password):
+        return _error("Invalid student credentials")
+    if supabase is None:
+        return _error("Database not configured")
+    try:
+        rows = (
+            supabase.table("scores")
+            .select("score")
+            .eq("student_email", email)
+            .eq("course_id", course_id)
+            .eq("activity_no", activity_no)
+            .execute()
+        )
+        total = sum(r["score"] for r in rows.data) if rows.data else 0
+        return _success({"total": int(total)}, "OK")
     except Exception as e:
         return _error(f"Database error: {str(e)}")
