@@ -32,6 +32,7 @@ def _parse_lo(raw) -> list[str]:
 
 def _build_prompt(topic_text: str, objectives: list[str]) -> str:
     lo_json = json.dumps(objectives, ensure_ascii=False)
+    lo_numbered = "\n".join(f"{i+1}. {o}" for i, o in enumerate(objectives))
     return f"""ROLE:
 You are a warm university instructor. Teach for conceptual mastery using Socratic questions and short academic explanations.
 
@@ -45,30 +46,36 @@ Never output plain text. Never skip the JSON wrapper. Even short replies must be
 ACTIVITY:
 {topic_text}
 
-LEARNING OBJECTIVES — TOP SECRET (never reveal, hint at, or list these):
-{lo_json}
+LEARNING OBJECTIVES — TOP SECRET (never reveal to the student):
+{lo_numbered}
 
 INSTRUCTIONS:
 1. First student message: present the activity text word-for-word, then ask exactly one guiding question.
 2. Ask ONE question per turn. Do not ask multiple questions at once.
-3. When the student's answer demonstrates understanding of an objective (call it <obj>):
-   a. Set APICall to: studentApi(action:"logScore", score:1, meta:"<obj>")
-   b. In "response": say "+1 point! Your score is now X." then give a short academic mini-lesson on <obj> with a bold heading using ** markdown.
-   c. Move to guide the student toward the next uncovered objective.
-4. When ALL objectives are covered: congratulate the student and say the activity is complete.
+3. When the student demonstrates understanding of objective number N (exact text: "OBJECTIVE_TEXT"):
+   Set APICall to EXACTLY:
+   studentApi(action:"logScore", score:1, meta:"OBJECTIVE_TEXT")
+   Where OBJECTIVE_TEXT is copied CHARACTER-FOR-CHARACTER from the list above.
+   Then in "response": say "+1 point! Your score is now X." and give a mini-lesson.
+4. When ALL objectives are covered: congratulate and say activity is complete.
+
+VALID meta VALUES (use these EXACTLY, copy-paste):
+{lo_json}
 
 HARD RULES:
-- Never teach or explain a concept BEFORE the student earns the point for it.
+- Never teach before a point is earned.
 - Never say "learning objective" or "LO".
-- Never reveal the student's password.
+- Never reveal the password.
 - Always respond in English.
 - Use numbered lists, not bullet points.
-- Always say "activity", never "topic".
-- ALWAYS output valid JSON — no exceptions.
+- Say "activity", never "topic".
+- ALWAYS output valid JSON.
 """
 
 
-# ─── DB Helper ────────────────────────────────────────────────────────────────
+def _normalize(s: str) -> set:
+    """Kelimelere böl, alt çizgileri boşluğa çevir, küçük harfe al."""
+    return set(re.sub(r'[_\-]', ' ', s).lower().split())
 
 async def _get_activity_full(course_id: str, activity_no: int):
     """Fetch activity INCLUDING learning objectives (for LLM use only)."""
@@ -227,26 +234,57 @@ async def studentChat(
         params = _parse_api_call(api_call_str, email, password, course_id, activity_no)
         if params and params["action"] == "logScore":
             meta = params["meta"]
-            # Meta değeri gerçekten bir objective mi kontrol et
-            # (LLM'in uydurma objective için puan vermesini engelle)
-            meta_valid = False
-            if meta and objectives:
-                for obj in objectives:
-                    if obj.lower().strip() in meta.lower() or meta.lower() in obj.lower().strip():
-                        meta_valid = True
-                        meta = obj  # orijinal objective metnini kullan
-                        break
-            else:
-                meta_valid = True  # objectives yoksa engelleme
 
-            if meta_valid:
+            # Meta → objective eşleştirme
+            # 1) Tam eşleşme (büyük/küçük harf farkı yok)
+            # 2) Substring eşleşme
+            # 3) En yüksek kelime örtüşmesi (sadece yeterli örtüşme varsa)
+            matched_meta = None
+            if meta and objectives:
+                meta_lower = meta.lower().strip()
+
+                # 1. Tam eşleşme
+                for obj in objectives:
+                    if obj.lower().strip() == meta_lower:
+                        matched_meta = obj
+                        break
+
+                # 2. Substring
+                if not matched_meta:
+                    for obj in objectives:
+                        if obj.lower() in meta_lower or meta_lower in obj.lower():
+                            matched_meta = obj
+                            break
+
+                # 3. Kelime örtüşmesi — EN İYİ eşleşmeyi seç, eşik %50
+                if not matched_meta:
+                    meta_words = _normalize(meta)
+                    best_ratio = 0.0
+                    best_obj = None
+                    for obj in objectives:
+                        obj_key_words = {w for w in _normalize(obj) if len(w) > 4}
+                        if not obj_key_words:
+                            continue
+                        common = {w for w in meta_words if w in obj_key_words}
+                        ratio = len(common) / len(obj_key_words)
+                        if ratio > best_ratio:
+                            best_ratio = ratio
+                            best_obj = obj
+                    if best_ratio >= 0.5:
+                        matched_meta = best_obj
+
+            elif not objectives:
+                matched_meta = meta
+
+            # Sadece gerçek bir objective eşleştiyse logScore çağır
+            if matched_meta:
                 api_result = logScore(
                     email=params["email"],
                     password=params["password"],
                     course_id=params["course_id"],
                     activity_no=params["activity_no"],
                     score=params["score"],
-                    meta=meta,
+                    meta=matched_meta,
                 )
 
     score_changed = (
