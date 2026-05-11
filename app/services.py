@@ -222,8 +222,10 @@ def logScore(email: str, password: str, course_id: str, activity_no: int, score:
 
     try:
         # Aynı objective için tekrar puan verilmesini engelle (activity bazlı değil, objective bazlı)
-        if meta:
-            existing = (
+        if not meta:
+            return _error("Meta (objective) is required for scoring")
+
+        existing = (
                 supabase
                 .table("scores")
                 .select("*")
@@ -233,8 +235,8 @@ def logScore(email: str, password: str, course_id: str, activity_no: int, score:
                 .eq("meta", meta)
                 .execute()
             )
-            if existing.data:
-                return _error("Score already submitted for this objective")
+        if existing.data:
+            return _error("Score already submitted for this objective")
 
         activity_check = (
             supabase
