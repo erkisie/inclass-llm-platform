@@ -407,20 +407,9 @@ async function sendMessage(forcedMsg) {
   }
 
   const aiText = data.data?.response || "";
-  const prevScore = score;
 
-  // LLM'in "Your score is now X" metninden skoru oku (en güvenilir yöntem)
-  const scoreMatch = aiText.match(/[Ss]core is now (\d+)/);
-  if (scoreMatch) {
-    const newTotal = parseInt(scoreMatch[1]);
-    if (newTotal > score) {
-      const gained = newTotal - score;
-      score = newTotal;
-      document.getElementById("scoreNum").textContent = score;
-      appendScoreToast(`+${gained} point! Total: ${score}`);
-    }
-  } else if (data.data?.score_changed) {
-    // Fallback: backend flag
+  // Skoru SADECE backend onayladığında güncelle
+  if (data.data?.score_changed === true) {
     score += 1;
     document.getElementById("scoreNum").textContent = score;
     appendScoreToast(`+1 point! Total: ${score}`);
